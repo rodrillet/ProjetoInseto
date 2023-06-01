@@ -1,10 +1,14 @@
 package model;
 
-public abstract class InsectMember {
+import interfaces.Inseto;
+
+public class Grilo implements Inseto {
+
+
     private String nome;
     private int id;
 
-    public InsectMember(String nome, int id) {
+    public Grilo(String nome, int id) {
         this.nome = nome;
         this.id = id;
     }
@@ -27,9 +31,16 @@ public abstract class InsectMember {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" +
+        return "Grilo{" +
                 "nome='" + nome + '\'' +
                 ", id=" + id +
                 '}';
     }
+
+    @Override
+    public void emitirSom() {
+        System.out.println("Cri-cri (" + getNome() + ")");
+    }
+
+
 }
