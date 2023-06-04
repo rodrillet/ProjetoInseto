@@ -1,6 +1,7 @@
 package factory;
 
 import model.Cigarra;
+import model.Grilo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,14 +33,13 @@ public class CigarraDAO {
     }
 
     public void update(Cigarra cigarra) {
-        String sql = "UPDATE CIGARRAS SET NOME CIGARRA_NOME = ? WHERE CIGARRA_ID = ?";
+        String sql = "UPDATE CIGARRAS SET CIGARRA_NOME = ? WHERE CIGARRA_ID = ?";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, cigarra.getNome());
             stmt.setInt(2, cigarra.getId());
             stmt.execute();
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -59,23 +59,45 @@ public class CigarraDAO {
 
     public List<Cigarra> getAll() {
         List<Cigarra> cigarras = new ArrayList<>();
-        String sql = "SELECT CIGARRA_ID, CIGARRA_NOME FROM CIGARRAS";
+        String sql = "SELECT cigarra_id, cigarra_nome FROM GRILOS";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("cigarra_id");
+                String nome = rs.getString("cigarra_nome");
+
+                Cigarra cigarra = new Cigarra(nome, id);
+                cigarras.add(cigarra);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("Erro ao buscar os grilos do banco de dados", ex);
+        }
+
+        return cigarras;
+    }
+
+    public Cigarra getByInstance(Cigarra CigarraID) {
+        Cigarra cigarra = null;
+        String sql = "SELECT CIGARRA_ID, CIGARRA_NOME FROM CIGARRAS WHERE CIGARRA_ID = ?";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, CigarraID.getId());
+
             ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
+            if (rs.next()) {
                 int codigo = rs.getInt("CIGARRA_ID");
                 String nome = rs.getString("CIGARRA_NOME");
-
-                Cigarra cigarra = new Cigarra(nome, codigo);
-                cigarras.add(cigarra);
+                cigarra = new Cigarra(nome, codigo);
             }
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
-        return cigarras;
+        return cigarra;
     }
+
 }
 
 

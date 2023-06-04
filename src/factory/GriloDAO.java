@@ -33,14 +33,13 @@ public class GriloDAO {
     }
 
     public void update(Grilo grilo) {
-        String sql = "UPDATE GRILOS SET NOME GRILO_NOME = ? WHERE GRILO_ID = ?";
+        String sql = "UPDATE GRILOS SET GRILO_NOME = ? WHERE GRILO_ID = ?";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, grilo.getNome());
             stmt.setInt(2, grilo.getId());
             stmt.execute();
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -60,23 +59,25 @@ public class GriloDAO {
 
     public List<Grilo> getAll() {
         List<Grilo> grilos = new ArrayList<>();
-        String sql = "SELECT GRILO_ID, GRILO_NOME FROM GRILOS";
+        String sql = "SELECT grilo_id, grilo_nome FROM GRILOS";
 
-        try {
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
             while (rs.next()) {
-                int codigo = rs.getInt("GRILO_ID");
-                String nome = rs.getString("GRILO_NOME");
+                int id = rs.getInt("grilo_id");
+                String nome = rs.getString("grilo_nome");
 
-                Grilo grilo = new Grilo(nome, codigo);
+                Grilo grilo = new Grilo(nome, id);
                 grilos.add(grilo);
             }
         } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException("Erro ao buscar os grilos do banco de dados", ex);
         }
+
         return grilos;
     }
+
 }
 
 
